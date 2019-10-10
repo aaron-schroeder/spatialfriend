@@ -51,14 +51,6 @@ activity file and we will process the data once it is all done.
 
 ---
 
-## Example
-```python
-import spatialfriend as sf
-
-```
-
----
-
 ## Dependencies and Installation
 
 ### Base Installation
@@ -98,17 +90,60 @@ extra feature.
 
 ---
 
+## Example
+```python
+import spatialfriend as sf
+
+import config  # a hidden file containing user-specific info.
+
+# Initialize an Elevation object.
+lonlat_list = [[-105.0, 40.0], [-105.1, 40.0], [-105.1, 40.1]]
+elev_helper = sf.Elevation(lonlat_list,
+                           user_gmaps_key=config.my_gmaps_key,
+                           img_dir=config.my_img_dir)
+
+# An array of cumulative distances to each point from the beginning
+# of the lonlat sequence.
+distances = elev_helper.distance
+
+# Get google maps elevations at each point.
+google_elevs = elev_helper.google(units='feet')
+
+# Get elevations from the .img files that live in `img_dir`
+# (if those img files cover the specified coordinates).
+img_elevs = elev_helper.img(units='feet')
+
+# Compare the elevation gain using the different elevation sources.
+print(sf.elevation_gain(google_elevs))
+print(sf.elevation_gain(img_elevs))
+
+# Use the algorithm to smooth the elevation profiles, and calculate
+# reasonable grades between points.
+grade_google = sf.grade_smooth(distances, google_elevs)
+grade_img = sf.grade_smooth(distances, img_elevs)
+```
+
+---
+
 ## Project Status
 
 ### Complete
 
 - Create Python package.
 
+- Implement an algorithm to smooth noisy elevation data.
+
 - Implement a series of tests to ensure functionality as development progresses.
+
+- Streamline input so user can be more hands-off.
 
 ### Current Activities
 
-- Streamline input so user can be more hands-off.
+### Documentation
+
+- Describe the algorithms in more detail.
+
+- Create a project wiki.
 
 #### Benchmarking and Optimization
 
