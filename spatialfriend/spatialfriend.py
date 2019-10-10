@@ -1,28 +1,13 @@
 import datetime
-from functools import wraps
-import glob
-import json
 import math
-from multiprocessing import Pool
-import requests
-import ssl
-import struct
-import time
-#import urllib
-from urllib.request import urlopen
-import utm
 import warnings
 
 from geopy.distance import great_circle as distance
 import googlemaps
-import matplotlib.pyplot as plt
 import numpy as np
-from osgeo import gdal
 import pandas
 from scipy.interpolate import interp1d
 from scipy.signal import savgol_filter
-
-import config
 
 
 class Elevation(object):
@@ -31,14 +16,23 @@ class Elevation(object):
   Construction of an Elevation object reads in the latlon coords and
   calculates the cumulative distance to each point from the start 
   of the latlon sequence.
+
+  TODO: Come up with a more descriptive class name.
   """
 
-  def __init__(self, latlon_list):
+  def __init__(self, latlon_list, user_gmaps_key=None, img_dir=None):
     """Creates an Elevation from a list of latlon coords.
 
     Args:
       latlon_list: An array-like object of [lon, lat] pairs.
+      user_gmaps_key: String representing Google Maps API key. Required
+                      for 'google' method.
+      img_dir: String representing the directory containing .img files 
+               to be searched. Required for 'img' method.
     """
+    self.user_gmaps_key = user_gmaps_key
+    self.img_dir = img_dir
+
     if type(latlon_list) == pandas.DataFrame:
       latlon_list = latlon_list.values.squeeze()
 
@@ -77,16 +71,26 @@ class Elevation(object):
   def distance(self):
     return np.array(self.data['distance']).squeeze()
 
-  @property
-  def google(self):
-    """Queries google maps' elevation api at each point."""
+  def google(self, units='meters'):
+    """Queries google maps' Elevation API at each point.
+
+    Args:
+      units: String representing desired units. 'meters' or 'feet',
+             case-insensitive.
+    Returns:
+      Google elevation values as a ndarray of floats, in meters.    
+    """
+    if self.user_gmaps_key is None:
+      return None
+
     if 'google' not in self.data.columns:
-      gmaps = googlemaps.Client(key=config.gmaps_api_key)
+      gmaps = googlemaps.Client(key=self.user_gmaps_key)
 
       # Google maps elevation api allows 500 elevation values
       # per request. Break latlon coordinates into 500-piece chunks
       # and pass to the api, then assemble returned elevations into one
       # consolidated list, and add to dataframe as a new column.
+      unit_factor = 5280.0/1609 if units.lower() == 'feet' else 1.0
       elevs = []
       for _, chunk in self.latlons.groupby(np.arange(len(self.latlons)) // 500):
 
@@ -94,22 +98,42 @@ class Elevation(object):
         locations = [(float(row['lat']), float(row['lon'])) 
             for _, row in chunk.iterrows()]
 
-        elevs.extend([round(elevobj['elevation'], 1) 
+        elevs.extend([round(elevobj['elevation'] * unit_factor, 1) 
             for elevobj in gmaps.elevation(locations)])
       self.data['google'] = elevs
 
     return np.array(self.data['google']).squeeze()
 
-  @property
-  def lidar(self, units='meters'):
-    """High-resolution elevation data based on National Map 1-meter DEM.
+  def img(self, units='meters'):
+    """Accesses elevation data from user-owned .img files.
+
+    In my case, I have downloaded high-resolution elevation data for
+    the Boulder area based on the National Map's 1-meter DEM.
+
+    Args:
+      units: String representing desired units. 'meters' or 'feet',
+             case-insensitive.
+    Returns:
+      Elevations from files in .img directory as a ndarray of floats.
+      NaN values are returned for coordinates outside the bounds of
+      all the .img files. 
  
-    Only works in Boulder area right now, because that is the only data
-    I have downloaded to my server.
+    TODO: Properly handle case where utm/gdal not installed, or
+          the .img directory is not specified.
     """
+    if self.img_dir is None:
+      return None
+
+    import glob
+    import struct
+
+    from osgeo import gdal
+    import utm
+
+    # TODO: Employ os.join so slashes aren't so important.
     file_objs = {}
-    fnames = glob.glob(
-        '/home/aaronsch/webapps/aarontakesawalk/trailzealot/img_files/*.img')
+    fnames = glob.glob(self.img_dir + '*.img')
+    fnames.extend(glob.glob(self.img_dir + '*.IMG'))
 
     # Compile geospatial information about each IMG file, then close the
     # file to avoid blowing up the server's memory.
@@ -128,7 +152,6 @@ class Elevation(object):
 
     # For each (lon, lat) pair, search through all img files for a
     # valid elevation coordinate, and save every one.
-    unit_factor = 5280.0/1609 if units == 'feet' else 1.0
     for index, row in self.latlons.iterrows():
       posX, posY, zone_num, zone_letter = utm.from_latlon(row['lat'], row['lon'])
 
@@ -162,6 +185,7 @@ class Elevation(object):
     # points which should have a valid elevation coordinate.
     # Catch exceptions resulting from each raster not having
     # the full spatial extent.
+    unit_factor = 5280.0/1609 if units.lower() == 'feet' else 1.0
     elevs = np.full(len(self.latlons), np.nan)
     for fname in fnames:
       img = gdal.Open(fname)
@@ -208,8 +232,11 @@ class Elevation(object):
     return elevs_round.squeeze()
 
 
-def retry(exceptions, tries=4, delay=3, backoff=2, logger=None):
+def _retry(exceptions, tries=4, delay=3, backoff=2, logger=None):
   """A deco to keep the National Map's elevation query working."""
+  from functools import wraps
+  import time
+
 
   def deco_retry(f):
     @wraps(f)
@@ -232,8 +259,8 @@ def retry(exceptions, tries=4, delay=3, backoff=2, logger=None):
   return deco_retry
 
 
-@retry(ValueError, tries=4, delay=3, backoff=2)
-def query_natmap(lat, lon, units='Meters'):
+@_retry(ValueError, tries=4, delay=3, backoff=2)
+def _query_natmap(lat, lon, units='Meters'):
   """Returns elevation data with 1/3 arc-second resolution (~30m).
 
   Data is accessed via based the National Map's Elevation Point Query 
@@ -247,17 +274,28 @@ def query_natmap(lat, lon, units='Meters'):
   TODO: Find an approach that goes faster or lets this function work
         in the background. 
   """
+  import json
+  import ssl
+
+  from urllib.request import urlopen
+
   ssl.match_hostname = lambda cert, hostname: True
-  
   url = 'https://nationalmap.gov/epqs/pqs.php?x=' + str(lon)  \
         + '&y=' + str(lat) + '&units=' + units.capitalize() + '&output=json'
   request = urllib.request.urlopen(url)
   json_request = json.load(request)
+
   return json_request['USGS_Elevation_Point_Query_Service'][
                       'Elevation_Query']['Elevation']
 
 
-def query(latlon):
+def _query(latlon):
+  import json
+  import ssl
+
+  from urllib.request import urlopen
+  #import requests
+
   ssl.match_hostname = lambda cert, hostname: True
   url = 'https://nationalmap.gov/epqs/pqs.php?x=' + str(latlon[0])  \
         + '&y=' + str(latlon[1]) + '&units=Meters&output=json'
@@ -266,16 +304,23 @@ def query(latlon):
   #request = requests.get(url)
   #return request.json()['USGS_Elevation_Point_Query_Service'][
   #                      'Elevation_Query']['Elevation']
+
   return json.load(request)['USGS_Elevation_Point_Query_Service'][
                             'Elevation_Query']['Elevation']
 
 
-def elevations_natmap(latlons, units='Meters'):
+def _elevations_natmap(latlons, units='Meters'):
+  from multiprocessing import Pool
+
   with Pool() as p:
-    print(p.map(query, latlons))
+    print(p.map(_query, latlons))
 
 
 def elevation_gain(elevations):
+  """Naive elevation gain calculation.
+
+  TODO: Make this algorithm smarter so noise doesn't affect it as much.
+  """
   return sum([max(elevations[i+1] - elevations[i], 0.0)
               for i in range(len(elevations) - 1)])
 
@@ -357,38 +402,6 @@ def elevation_smooth(distances, elevations, window_length=3, polyorder=2):
       #fill_value='extrapolate', kind='quadratic')
   smooth = interp_function(distances)
 
-  ## Calculate grade before and after using the algorithm.
-  #grade = pandas.DataFrame(distances)
-  #dx = distances.diff()
-  #grade['raw'] = elevations.diff() / dx 
-  #grade['filtered'] = pandas.Series(smooth).diff() / dx
-
-  ## Plot the downsampled elevation data atop the full data.
-  ## This is temporary while debugging.
-  #fig, axs = plt.subplots(1, 1)
-  #axs.plot(distances, elevations, 'k-', label='Raw Data')
-  #data_ds.plot(kind='line', x='distance', y='sg',
-  #    style='m-', label='Smoothed (Round 1)', ax=axs)
-  #axs.plot(distances, smooth, 'r-', label='Smoothed (Round 2)')
-  #data_ds.plot(kind='line', x='distance', y='interp',
-  #    style='mo', label='Interpolated', ax=axs)
-  #data_ds.plot(kind='line', x='distance', y='elevation',
-  #    style='co', label='Uniformly Sampled', ax=axs)
-  #axs.legend()
-
-  ## Plot grade before and after filtration.
-  #_, axs_g = plt.subplots(2, 1)
-  #axs_g[0].plot(distances, elevations, 'k-', label='Raw Data')
-  ##data_ds.plot(kind='line', x='distance', y='sg_final', 
-  #axs_g[0].plot(distances, smooth, 'r-', label='Filtered Data')
-  #grade.plot(kind='line', x='distance', y='raw', style='k-',  
-  #    label='Raw Data', ax=axs_g[1])
-  #grade.plot(kind='line', x='distance', y='filtered', style='r-',  
-  #    label='Filtered Data', ax=axs_g[1])
-  #axs_g[1].set_ylim(-1.0, 1.0)
-
-  #plt.show()
-
   return smooth
 
 
@@ -405,7 +418,13 @@ def grade_smooth(distances, elevations):
   elevations = pandas.Series(elevations).reset_index(drop=True)
   elevations_smooth = pandas.Series(elevation_smooth(distances, elevations))
  
-  return np.array(elevations_smooth.diff() / distances.diff())
+  grade = elevations_smooth.diff() / distances.diff()
+
+  # Clean up spots with NaNs from dividing by zero distance.
+  # This assumes the distances and elevations arrays have no NaNs.
+  grade.fillna(0, inplace=True) 
+
+  return np.array(grade)
 
 
 def grade_raw(distances, elevations):
@@ -420,4 +439,10 @@ def grade_raw(distances, elevations):
   distances = pandas.Series(distances).reset_index(drop=True)
   elevations = pandas.Series(elevations).reset_index(drop=True)
 
-  return np.array(elevations.diff() / distances.diff())
+  grade = elevations.diff() / distances.diff()
+
+  # Clean up spots with NaNs from dividing by zero distance.
+  # This assumes the distances and elevations arrays have no NaNs.
+  grade.fillna(0, inplace=True) 
+
+  return np.array(grade)

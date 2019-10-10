@@ -5,20 +5,16 @@
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 
-<!--
-[![Build Status](http://img.shields.io/travis/badges/badgerbadgerbadger.svg?style=flat-square)](https://travis-ci.org/badges/badgerbadgerbadger) [![Dependency Status](http://img.shields.io/gemnasium/badges/badgerbadgerbadger.svg?style=flat-square)](https://gemnasium.com/badges/badgerbadgerbadger) [![Coverage Status](http://img.shields.io/coveralls/badges/badgerbadgerbadger.svg?style=flat-square)](https://coveralls.io/r/badges/badgerbadgerbadger) [![Badges](http://img.shields.io/:badges-9/9-ff6799.svg?style=flat-square)](https://github.com/badges/badgerbadgerbadger)
--->
-
-
 ---
 
 ## Table of Contents
 
 - [Motivation](#motivation)
 - [The Elevation Profile Smoothing Algorithm](#the-elevation-profile-smoothing-algorithm)
+- [Dependencies and Installation](#dependencies-and-installation)
 - [Example](#example)
 - [Project Status](#project-status)
-- [Inspiration](#inspiration)
+- [References](#references)
 - [Contact](#contact)
 - [License](#license)
 
@@ -63,6 +59,45 @@ import spatialfriend as sf
 
 ---
 
+## Dependencies and Installation
+
+### Base Installation
+
+[GeoPy](https://github.com/geopy/geopy),
+[Google Maps](https://github.com/googlemaps/google-maps-services-python),
+[NumPy](http://www.numpy.org/), [Pandas](http://pandas.pydata.org/), 
+and [SciPy](https://www.scipy.org/) are required for the base installation.
+
+`pip install spatialfriend` to install.
+
+### Extra: Elevaton values from `.img` files
+
+In addition to providing access to the Google Maps Elevation query service,
+spatialfriend allows querying of user-owned `.img` files that contain 
+elevation data. Such files are available from 
+[the National Map's download page](https://viewer.nationalmap.gov/basic/).
+
+[GDAL](https://pypi.org/project/GDAL/) and [utm](https://github.com/Turbo87/utm)
+are required for this extra feature.
+
+`pip install spatialfriend[img]` to install.
+
+### Extra: Elevation values from the National Map
+
+spatialfriend allows querying of the National Map's 
+[Elevation Point Query Service](https://nationalmap.gov/epqs/). This 
+service exposes data from the National Map's 1/3 arc-second Digital 
+Elevation Model. 1/3 arc-second refers to the data's horizontal 
+resolution in terms of degrees; this equates to roughly 30 meters.
+
+[requests](https://pypi.org/project/requests/) and 
+[urllib3](https://github.com/urllib3/urllib3) are required for this 
+extra feature.
+
+`pip install spatialfriend[tnm]` to install.
+
+---
+
 ## Project Status
 
 ### Complete
@@ -93,7 +128,7 @@ import spatialfriend as sf
 
 ---
 
-## Inspiration <!-- References ? -->
+## References
 
 <!--
 - [A Developer Diary](http://www.adeveloperdiary.com/data-science/machine-learning/implement-viterbi-algorithm-in-hidden-markov-model-using-python-and-r/) for helping understand the nuts and bolts of the Viterbi algorithm in Python.
@@ -117,40 +152,11 @@ Reach out to me at one of the following places!
 
 [![License](http://img.shields.io/:license-mit-blue.svg)](http://badges.mit-license.org)
 
-- **[MIT license](http://opensource.org/licenses/mit-license.php)**
-- Copyright 2019 © <a href="https://trailzealot.com/about" target="_blank">Aaron Schroeder</a>.
-
-<!--
-## Installation
-
-- All the `code` required to get started
-- Images of what it should look like
-
-### Clone
-
-- Clone this repo to your local machine using `https://github.com/EricSchraider/mapmatching`
-
-### Setup
-
-- If you want more syntax highlighting, format your code like this:
-
-> update and install this package first
-
-```shell
-$ brew update
-$ brew install fvcproductions
-```
-
-> now install npm and bower packages
-
-```shell
-$ npm install
-$ bower install
-```
+This project is licensed under the MIT License. See
+[LICENSE](https://github.com/aaron-schroeder/spatialfriend/blob/master/LICENSE)
+file for details.
 
 ---
--->
-
 
 <!--
 ## Features

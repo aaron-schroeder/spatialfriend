@@ -1,11 +1,13 @@
-import unittest
 import datetime
+import unittest
+
 import numpy as np
 from numpy.testing import assert_array_equal, assert_allclose
 import pandas
 #from pandas.util.testing import assert_frame_equal, assert_series_equal
 
 import spatialfriend as sf
+import config
 
 
 class TestElevFuncs(unittest.TestCase):
@@ -15,7 +17,7 @@ class TestElevFuncs(unittest.TestCase):
   elevations = [0.0, 50.0, 75.0, 75.0]
   #distances = [0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0]
   #elevations =[0.0,  5.0, 10.0, 15.0, 17.5, 20.0, 22.5, 22.5, 22.5, 22.5]
-  expected_grades = [np.nan, 0.5, 0.25, 0.0]
+  expected_grades = [0.0, 0.5, 0.25, 0.0]
   dist_series = pandas.Series(distances)
   elev_series = pandas.Series(elevations)
   expected_array = np.array(expected_grades)
@@ -77,9 +79,11 @@ class TestElevation(unittest.TestCase):
                  [-105.344016, 40.025000],
                  [-105.260024, 40.025000], 
                  [-105.260024, 39.992579]]
-  elevation = sf.Elevation(latlon_list)
-  google_elevs = elevation.google
-  lidar_elevs = elevation.lidar
+  elevation = sf.Elevation(latlon_list,
+                           user_gmaps_key=config.my_gmaps_key,
+                           img_dir=config.my_img_dir)
+  google_elevs = elevation.google()
+  img_elevs = elevation.img()
 
   def test_create(self):
     self.assertIsInstance(self.elevation,
@@ -92,15 +96,15 @@ class TestElevation(unittest.TestCase):
                           "Google elevs are not a ndarray.") 
 
   def test_lidar(self):
-    self.assertIsInstance(self.lidar_elevs,
+    self.assertIsInstance(self.img_elevs,
                           np.ndarray,
-                          "Lidar elevs are not a ndarray.") 
+                          ".img elevs are not a ndarray.") 
 
   def test_methods_close(self):
-    assert_allclose(self.lidar_elevs,
+    assert_allclose(self.img_elevs,
                     self.google_elevs,
                     atol=20.0,
-                    err_msg="Google and lidar elevs are "  \
+                    err_msg="Google and .img elevs are "  \
                             + "not sufficiently close.")
 
 
