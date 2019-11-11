@@ -139,7 +139,7 @@ grade_img = sf.grade_smooth(distances, img_elevs)
 
 ### Current Activities
 
-### Documentation
+#### Documentation
 
 - Describe the algorithms in more detail.
 
@@ -160,6 +160,11 @@ grade_img = sf.grade_smooth(distances, img_elevs)
   timeseries to remove measurement noise. I want to try and figure out
   how they do it, then replicate their techniques, and compare the
   smoothed position data.
+
+- Make the elevation gain algorithm smarter, or create an alternate
+  algorithm to emulate algorithms employed by Strava/TrainingPeaks/Garmin.
+
+- Settle on an approach to querying the National Map.
 
 ---
 
