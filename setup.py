@@ -9,7 +9,7 @@ requirements = ['geopy>=1.20.0', 'googlemaps>=3.0', 'numpy>=1.14',
                 'pandas>=0.24', 'scipy>=1.1']
 
 setup(name='spatialfriend',
-      version='0.0.10',
+      version='0.0.11',
       author='Aaron Schroeder',
       author_email='aaron@trailzealot.com',
       description='Python library for calculating geospatial data'  \
@@ -20,7 +20,7 @@ setup(name='spatialfriend',
       packages=['spatialfriend'],
       install_requires=requirements,
       extras_require={
-        'img': ['GDAL>=2.1.4', 'utm>=0.4.2'],
+        'img': ['GDAL>=2.1.3', 'utm>=0.4.2'],
         'tnm': ['requests>=2.22', 'urllib3>=1.25.6'],
       },
       license='MIT License',

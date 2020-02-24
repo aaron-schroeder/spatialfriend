@@ -15,6 +15,7 @@ class TestElevFuncs(unittest.TestCase):
   # Generate some dummy data, both as lists and series.
   distances = [0.0, 100.0, 200.0, 300.0]
   elevations = [0.0, 50.0, 75.0, 75.0]
+  times = [0.0, 1.0, 2.0, 3.0]
   #distances = [0.0, 10.0, 20.0, 30.0, 40.0, 50.0, 60.0, 70.0, 80.0, 90.0]
   #elevations =[0.0,  5.0, 10.0, 15.0, 17.5, 20.0, 22.5, 22.5, 22.5, 22.5]
   expected_grades = [0.0, 0.5, 0.25, 0.0]
@@ -35,6 +36,7 @@ class TestElevFuncs(unittest.TestCase):
 
   # Integration test: calculate smooth elevs from lists, series, and a mixture.
   elev_list_smooth = sf.elevation_smooth(distances, elevations)
+  elev_list_smooth_time = sf.elevation_smooth_time(times, elevations)
   elev_series_smooth = sf.elevation_smooth(dist_series, elev_series)
   elev_mixed_1_smooth = sf.elevation_smooth(dist_series, elevations)
   elev_mixed_2_smooth = sf.elevation_smooth(distances, elev_series)
@@ -62,6 +64,12 @@ class TestElevFuncs(unittest.TestCase):
 
   def test_elevation_smooth(self):
     assert_allclose(self.elev_list_smooth,
+                    self.expected_elevs_array,
+                    atol=10.0,
+                    err_msg="Smooth elevs are not sufficiently close.")
+
+  def test_elevation_smooth_time(self):
+    assert_allclose(self.elev_list_smooth_time,
                     self.expected_elevs_array,
                     atol=10.0,
                     err_msg="Smooth elevs are not sufficiently close.")
