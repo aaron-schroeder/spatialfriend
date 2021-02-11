@@ -7,14 +7,24 @@
 
 ---
 
+## :zap: Project Update :zap: 
+
+This project and its sister project [`heartandsole`](https://github.com/aaron-schroeder/heartandsole)
+were my first real crack at activity file data analysis, and they do not reflect my
+current standards. I am working on breaking out individual functionalities into 
+separate packages. I will update the `README` of both packages to refer interested
+users to my new self-contained, less messy projects. Stay tuned, and check out the 
+[Project Status](#project-status) section below for specifics.
+
+---
+
 ## Table of Contents
 
 - [Motivation](#motivation)
 - [The Elevation Profile Smoothing Algorithm](#the-elevation-profile-smoothing-algorithm)
 - [Dependencies and Installation](#dependencies-and-installation)
 - [Example](#example)
-- [Project Status](#project-status)
-- [References](#references)
+- [Project Status](#project-status) <!-- - [References](#references) -->
 - [Contact](#contact)
 - [License](#license)
 
@@ -48,6 +58,8 @@ activity file and we will process the data once it is all done.
 ---
 
 ## The Elevation Profile Smoothing Algorithm
+
+:soon:
 
 ---
 
@@ -130,20 +142,43 @@ grade_img = sf.grade_smooth(distances, img_elevs)
 ### Complete
 
 - Create Python package.
-
 - Implement an algorithm to smooth noisy elevation data.
-
 - Implement a series of tests to ensure functionality as development progresses.
-
 - Streamline input so user can be more hands-off.
 
 ### Current Activities
 
+- De-clutter this project, as it has splintered into many separate packages and projects. Refer users
+  to my new projects that accomplish the functionality once found here.
+
+### Future Work (likely in other repos)
+
+#### Position and distance algorithms
+
+- Publish a separate repo (tentatively named `py-distance`).
+- Implement an algorithm to smooth GPS position and speed data. 
+  Most GPS-enabled activity trackers filter their speed and distance
+  timeseries to remove measurement noise. I want to try and figure out
+  how they do it, then replicate their techniques, and compare the
+  smoothed position data.
+
+#### Elevation and grade algorithms
+
+- Publish a separate repo (tentatively named `py-elevation`).
+- Make the elevation gain algorithm smarter, or create an alternate
+  algorithm to emulate algorithms employed by Strava/TrainingPeaks/Garmin.
+
+#### Elevation data
+
+- Publish a separate repo (tentatively named `py-elevationquery`).
+- Settle on an approach to querying the National Map (nearing completion).
+
 #### Documentation
 
-- Describe the algorithms in more detail.
-
-- Create a project wiki.
+- Describe the algorithms in more detail. Maybe in a wiki, maybe in the
+  individual package's `README`s.
+- Provide references to papers and other resources where I got inspiration
+  for each algorithm.
 
 #### Benchmarking and Optimization
 
@@ -153,34 +188,17 @@ grade_img = sf.grade_smooth(distances, img_elevs)
    - Generate series of GPS points to compare elevation datasets with
      and without smoothing.
 
-### Future Work
-
-- Implement an algorithm to smooth GPS position and speed data. 
-  Most GPS-enabled activity trackers filter their speed and distance
-  timeseries to remove measurement noise. I want to try and figure out
-  how they do it, then replicate their techniques, and compare the
-  smoothed position data.
-
-- Make the elevation gain algorithm smarter, or create an alternate
-  algorithm to emulate algorithms employed by Strava/TrainingPeaks/Garmin.
-
-- Settle on an approach to querying the National Map.
-
 ---
 
-## References
+<!-- ## References -->
 
-<!--
-- [A Developer Diary](http://www.adeveloperdiary.com/data-science/machine-learning/implement-viterbi-algorithm-in-hidden-markov-model-using-python-and-r/) for helping understand the nuts and bolts of the Viterbi algorithm in Python.
--->
-
----
+<!-- --- -->
 
 ## Contact
 
 Reach out to me at one of the following places!
 
-- Website: <a href="https://trailzealot.com" target="_blank">trailzealot.com</a>
+<!-- - Website: <a href="https://trailzealot.com" target="_blank">trailzealot.com</a> -->
 - LinkedIn: <a href="https://www.linkedin.com/in/aarondschroeder/" target="_blank">linkedin.com/in/aarondschroeder</a>
 - Twitter: <a href="https://twitter.com/trailzealot" target="_blank">@trailzealot</a>
 - Instagram: <a href="https://instagram.com/trailzealot" target="_blank">@trailzealot</a>
@@ -195,11 +213,3 @@ Reach out to me at one of the following places!
 This project is licensed under the MIT License. See
 [LICENSE](https://github.com/aaron-schroeder/spatialfriend/blob/master/LICENSE)
 file for details.
-
----
-
-<!--
-## Features
-## Documentation (Optional)
-## Tests (Optional)
--->
