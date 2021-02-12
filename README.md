@@ -20,7 +20,6 @@ users to my new self-contained, less messy projects. Stay tuned, and check out t
 
 ## Table of Contents
 
-- [Motivation](#motivation)
 - [The Elevation Profile Smoothing Algorithm](#the-elevation-profile-smoothing-algorithm)
 - [Dependencies and Installation](#dependencies-and-installation)
 - [Example](#example)
@@ -30,36 +29,10 @@ users to my new self-contained, less messy projects. Stay tuned, and check out t
 
 ---
 
-## Motivation
-
-Determining one's elevation on Earth's surface has become a lot easier thanks
-to high-accuracy consumer GPS products and digital elevation models (DEMs) of
-Earth's topography. Still, there are errors in GPS location and in every Earth
-surface model. When working with elevation and position time series, for example
-calculating instantaneous slopes during a trail running workout, stricter 
-requirements are placed on the data. Even with a perfectly accurate DEM,
-inaccurate GPS data can yield totally unreasonable elevation profiles and path
-slopes, documenting work or elevation gain that the runner did not actually do.
-The same can be said for a perfectly accurate GPS trace on an inaccurate DEM.
-
-The goal of this project is to take GPS data of all resolutions, and return
-geospatial data and calculations that actually match the athlete's experience.
-No more unreasonably steep slopes or noisy data in your elevation profile 
-making running power calculations meaningless. No more adding to your
-workout's distance because your GPS was drifting around while you were 
-waiting at a stoplight. No more wondering if those elevation measurements
-you read on GPS device or barometric altimeter are accurate. No more apples to
-oranges data comparisons because of differences between devices or datasets. 
-
-This package is all about being able to hit record on that device, head
-out for your run/hike/bike ride, and forget about it. Bring that messy
-activity file and we will process the data once it is all done.
-
----
-
 ## The Elevation Profile Smoothing Algorithm
 
-:soon:
+:tada: Moved over to my `py-elevation` package. 
+[Read about it over there!](https://github.com/aaron-schroeder/py-elevation#the-elevation-smoothing-algorithm)
 
 ---
 
@@ -76,29 +49,15 @@ and [SciPy](https://www.scipy.org/) are required for the base installation.
 
 ### Extra: Elevaton values from `.img` files
 
-In addition to providing access to the Google Maps Elevation query service,
-spatialfriend allows querying of user-owned `.img` files that contain 
-elevation data. Such files are available from 
-[the National Map's download page](https://viewer.nationalmap.gov/basic/).
-
-[GDAL](https://pypi.org/project/GDAL/) and [utm](https://github.com/Turbo87/utm)
-are required for this extra feature.
-
-`pip install spatialfriend[img]` to install.
+:zap: Update :zap: This is now handled by 
+[my `elevation-query` package](https://github.com/aaron-schroeder/elevation-query#extra-elevation-values-from-img-and-geotiff-files),
+and more flexibly too.
 
 ### Extra: Elevation values from the National Map
 
-spatialfriend allows querying of the National Map's 
-[Elevation Point Query Service](https://nationalmap.gov/epqs/). This 
-service exposes data from the National Map's 1/3 arc-second Digital 
-Elevation Model. 1/3 arc-second refers to the data's horizontal 
-resolution in terms of degrees; this equates to roughly 30 meters.
-
-[requests](https://pypi.org/project/requests/) and 
-[urllib3](https://github.com/urllib3/urllib3) are required for this 
-extra feature.
-
-`pip install spatialfriend[tnm]` to install.
+:zap: Update :zap: This is now handled by 
+[my `elevation-query` package](https://github.com/aaron-schroeder/elevation-query#extra-elevation-values-from-img-and-geotiff-files),
+and it works much faster over there.
 
 ---
 
@@ -141,10 +100,19 @@ grade_img = sf.grade_smooth(distances, img_elevs)
 
 ### Complete
 
-- Create Python package.
+- Create package on PyPi.
 - Implement an algorithm to smooth noisy elevation data.
-- Implement a series of tests to ensure functionality as development progresses.
-- Streamline input so user can be more hands-off.
+- Implement (some) tests.
+
+#### Elevation and grade algorithms
+
+- :tada: Publish a separate repo called [`py-elevation`](https://github.com/aaron-schroeder/py-elevation),
+  which takes over for this repo and will be the location of continuing development.
+
+#### Elevation data
+
+- :tada: Publish a separate repo called [`py-elevationquery`](https://github.com/aaron-schroeder/elevation-query),
+  which takes over the elevation-from-GPS role of this repo and will be the location of continuing development.
 
 ### Current Activities
 
@@ -162,37 +130,7 @@ grade_img = sf.grade_smooth(distances, img_elevs)
   how they do it, then replicate their techniques, and compare the
   smoothed position data.
 
-#### Elevation and grade algorithms
-
-- Publish a separate repo (tentatively named `py-elevation`).
-- Make the elevation gain algorithm smarter, or create an alternate
-  algorithm to emulate algorithms employed by Strava/TrainingPeaks/Garmin.
-
-#### Elevation data
-
-- Publish a separate repo (tentatively named `py-elevationquery`).
-- Settle on an approach to querying the National Map (nearing completion).
-
-#### Documentation
-
-- Describe the algorithms in more detail. Maybe in a wiki, maybe in the
-  individual package's `README`s.
-- Provide references to papers and other resources where I got inspiration
-  for each algorithm.
-
-#### Benchmarking and Optimization
-
-- Benchmark algorithm performance (speed, accuracy, and consistency):
-   - Generate dummy series of (distance, elevation) data to check
-     smoothing algorithm.
-   - Generate series of GPS points to compare elevation datasets with
-     and without smoothing.
-
 ---
-
-<!-- ## References -->
-
-<!-- --- -->
 
 ## Contact
 
