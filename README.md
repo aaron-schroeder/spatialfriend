@@ -104,10 +104,15 @@ grade_img = sf.grade_smooth(distances, img_elevs)
 - Implement an algorithm to smooth noisy elevation data.
 - Implement (some) tests.
 
+#### Position and distance algorithms
+
+- Publish a separate repo called [`pandas-x`](https://github.com/aaron-schroeder/pandas-x),
+  which is the location of ongoing development of the distance calculations started here.
+
 #### Elevation and grade algorithms
 
 - :tada: Publish a separate repo called [`py-elevation`](https://github.com/aaron-schroeder/py-elevation),
-  which takes over for this repo and will be the location of continuing development.
+  which is the location of ongoing development of the elevation and grade calculations started here.
 
 #### Elevation data
 
@@ -119,28 +124,17 @@ grade_img = sf.grade_smooth(distances, img_elevs)
 - De-clutter this project, as it has splintered into many separate packages and projects. Refer users
   to my new projects that accomplish the functionality once found here.
 
-### Future Work (likely in other repos)
-
-#### Position and distance algorithms
-
-- Publish a separate repo (tentatively named `py-distance`).
-- Implement an algorithm to smooth GPS position and speed data. 
-  Most GPS-enabled activity trackers filter their speed and distance
-  timeseries to remove measurement noise. I want to try and figure out
-  how they do it, then replicate their techniques, and compare the
-  smoothed position data.
-
 ---
 
 ## Contact
 
 Reach out to me at one of the following places!
 
-<!-- - Website: <a href="https://trailzealot.com" target="_blank">trailzealot.com</a> -->
-- LinkedIn: <a href="https://www.linkedin.com/in/aarondschroeder/" target="_blank">linkedin.com/in/aarondschroeder</a>
-- Twitter: <a href="https://twitter.com/trailzealot" target="_blank">@trailzealot</a>
-- Instagram: <a href="https://instagram.com/trailzealot" target="_blank">@trailzealot</a>
-- GitHub: <a href="https://github.com/aaron-schroeder" target="_blank">github.com/aaron-schroeder</a>
+- Website: [trailzealot.com](https://trailzealot.com)
+- LinkedIn: [linkedin.com/in/aarondschroeder](https://www.linkedin.com/in/aarondschroeder/)
+- Twitter: [@trailzealot](https://twitter.com/trailzealot)
+- Instagram: [@trailzealot](https://instagram.com/trailzealot)</a>
+- GitHub: [github.com/aaron-schroeder](https://github.com/aaron-schroeder)
 
 ---
 
