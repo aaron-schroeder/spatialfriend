@@ -31,8 +31,8 @@ users to my new self-contained, less messy projects. Stay tuned, and check out t
 
 ## The Elevation Profile Smoothing Algorithm
 
-:tada: Moved over to my `py-elevation` package. 
-[Read about it over there!](https://github.com/aaron-schroeder/py-elevation#the-elevation-smoothing-algorithm)
+:tada: Moved over to my `pandas-xyz` package. 
+[Read about it over there!](https://github.com/aaron-schroeder/pandas-xyz#the-elevation-smoothing-algorithm)
 
 ---
 
@@ -104,19 +104,15 @@ grade_img = sf.grade_smooth(distances, img_elevs)
 - Implement an algorithm to smooth noisy elevation data.
 - Implement (some) tests.
 
-#### Position and distance algorithms
+#### Position, distance, elevation, and grade algorithms
 
-- Publish a separate repo called [`pandas-x`](https://github.com/aaron-schroeder/pandas-x),
-  which is the location of ongoing development of the distance calculations started here.
-
-#### Elevation and grade algorithms
-
-- :tada: Publish a separate repo called [`py-elevation`](https://github.com/aaron-schroeder/py-elevation),
-  which is the location of ongoing development of the elevation and grade calculations started here.
+- Publish a separate repo called [`pandas-xyz`](https://github.com/aaron-schroeder/pandas-xyz),
+  which is the location of ongoing development of the distance, elevation, and grade calculations
+  started here.
 
 #### Elevation data
 
-- :tada: Publish a separate repo called [`py-elevationquery`](https://github.com/aaron-schroeder/elevation-query),
+- :tada: Publish a separate repo called [`elevation-query`](https://github.com/aaron-schroeder/elevation-query),
   which takes over the elevation-from-GPS role of this repo and will be the location of continuing development.
 
 ### Current Activities
